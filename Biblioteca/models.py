@@ -21,3 +21,13 @@ class Autor(models.Model):
     def __str__(self):
         return self.nombre
 
+class Libro(models.Model):
+    titulo=models.CharField(max_length=250,blank=False,null=False)
+    año_publicacion=models.PositiveIntegerField(blank=False,null=False)
+    ISBN=models.CharField(max_length=17,blank=False,null=False,unique=True)
+    categoria=models.ForeignKey(Categoria,on_delete=models.PROTECT,related_name='libros',blank=False,null=False)
+    autor=models.ManyToManyField(Autor,related_name='libros')
+
+    def __str__(self):
+        return f'{self.ISBN}-{self.titulo}({self.año_publicacion})'
+    
