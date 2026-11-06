@@ -1,6 +1,5 @@
 from django.db import models
 import datetime
-
 # Create your models here.
 class Estudiante(models.Model):
     codigo=models.CharField(max_length=10, blank=False, null=False,unique=True)
@@ -49,7 +48,7 @@ class Copia_Fisica(models.Model):
 class Prestamo(models.Model):
     
     def fecha_limite_default():
-        return date.today()+timedelta(days=15)
+        return datetime.date.today()+datetime.timedelta(days=15)
 
     copia_fisica=models.ForeignKey(Copia_Fisica,on_delete=models.PROTECT,related_name='prestamos',null=False,blank=False)
     estudiante=models.ForeignKey(Estudiante,on_delete=models.PROTECT,related_name='prestamos',null=False,blank=False)
