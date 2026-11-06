@@ -1,4 +1,5 @@
 from django.db import models
+import datetime
 
 # Create your models here.
 class Estudiante(models.Model):
@@ -27,6 +28,14 @@ class Libro(models.Model):
     ISBN=models.CharField(max_length=17,blank=False,null=False,unique=True)
     categoria=models.ForeignKey(Categoria,on_delete=models.PROTECT,related_name='libros',blank=False,null=False)
     autor=models.ManyToManyField(Autor,related_name='libros')
+
+    def clean(self):
+        if(self.año_publicacion>datetime.date.today().year):
+            raise ValueError("El AÑO ES SUPERIOR AL ACTUAL")
+        if(self.año_publicacion<1000):
+            raise ValueError("El AÑO NO PUEDE SER MENOR AL LOS 1000 AÑOS")
+
+
 
     def __str__(self):
         return f'{self.ISBN}-{self.titulo}({self.año_publicacion})'
