@@ -78,4 +78,4 @@ class Prestamo(models.Model):
                 raise ValidationError("Lo siento, esta copia fisica ya ha sido prestada")
     
     def __str__(self):
-        return f'{fecha_prestamo}-{estudiante}-{copia_fisica}-{fecha_limite}'
+        return f'{self.fecha_prestamo}-{self.estudiante}-{self.copia_fisica}-{self.fecha_limite}'
