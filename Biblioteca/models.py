@@ -1,13 +1,15 @@
 from django.db import models
 import datetime
+from django.core.exceptions import ValidationError
+
 # Create your models here.
 class Estudiante(models.Model):
     codigo=models.CharField(max_length=10, blank=False, null=False,unique=True)
     nombre=models.CharField(max_length=100, blank=False, null=False)
-    email=models.CharField(max_length=100, blank=False, null=False,unique=True)
+    email=models.EmailField(blank=False, null=False,unique=True)
 
     def __str__(self):
-        return f"{codigo}-{nombre}"
+        return f"{self.codigo}-{self.nombre}"
 
 class Categoria(models.Model):
     descripcion=models.CharField(max_length=100, blank=False,null=False, unique=True) 
@@ -29,25 +31,27 @@ class Libro(models.Model):
     autor=models.ManyToManyField(Autor,related_name='libros')
 
     def clean(self):
-        if(self.año_publicacion>datetime.date.today().year):
-            raise ValueError("El AÑO ES SUPERIOR AL ACTUAL")
-        if(self.año_publicacion<1000):
-            raise ValueError("El AÑO NO PUEDE SER MENOR AL LOS 1000 AÑOS")
+        if self.año_publicacion is not None:
+            if(self.año_publicacion>datetime.date.today().year):
+                raise ValidationError({'año_publicacion':"El AÑO ES SUPERIOR AL ACTUAL"})
+            if(self.año_publicacion<1000):
+                raise ValidationError({'año_publicacion',"El AÑO NO PUEDE SER MENOR AL LOS 1000 AÑOS"})
 
     def __str__(self):
         return f'{self.ISBN}-{self.titulo}({self.año_publicacion})'
 
 class Copia_Fisica(models.Model):
     class Condicion(models.TextChoices):
-        nuevo='nuevo','Nuevo'
-        usado='usado','Usado'
-        danado='danado','Dañado'
+        NUEVO='nuevo','Nuevo'
+        USADO='usado','Usado'
+        DANADO='danado','Dañado'
     SKU=models.CharField(max_length=50, blank=False,null=False,unique=True)
-    condicion=models.CharField(choices=Condicion.choices, blank=True,null=False)
+    condicion=models.CharField(max_length=10,choices=Condicion.choices,default=Condicion.NUEVO, blank=True,null=False)
     libro=models.ForeignKey(Libro,on_delete=models.PROTECT,related_name='copias_fisicas',null=False,blank=False)
-    
+    observaciones=models.TextField(blank=True)
+
     def __str__(self):
-        return f'{self.SKU}-{self.libro.titulo}'
+        return f'{self.SKU}-{self.libro.titulo}-{self.condicion}'
 
 class Prestamo(models.Model):
     
@@ -72,3 +76,6 @@ class Prestamo(models.Model):
             ).exclude(pk=self.pk).exists()
             if existe_prestamo_activo:
                 raise ValidationError("Lo siento, esta copia fisica ya ha sido prestada")
+    
+    def __str__(self):
+        return f'{fecha_prestamo}-{estudiante}-{copia_fisica}-{fecha_limite}'
