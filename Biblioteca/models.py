@@ -38,8 +38,12 @@ class Libro(models.Model):
         return f'{self.ISBN}-{self.titulo}({self.año_publicacion})'
 
 class Copia_Fisica(models.Model):
+    class Condicion(models.TextChoices):
+        nuevo='nuevo','Nuevo'
+        usado='usado','Usado'
+        danado='danado','Dañado'
     SKU=models.CharField(max_length=50, blank=False,null=False,unique=True)
-    condicion=models.CharField(max_length=200, blank=True,null=False)
+    condicion=models.CharField(choices=Condicion.choices, blank=True,null=False)
     libro=models.ForeignKey(Libro,on_delete=models.PROTECT,related_name='copias_fisicas',null=False,blank=False)
     
     def __str__(self):
