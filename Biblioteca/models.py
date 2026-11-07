@@ -46,7 +46,7 @@ class Copia_Fisica(models.Model):
         USADO='usado','Usado'
         DANADO='danado','Dañado'
     SKU=models.CharField(max_length=50, blank=False,null=False,unique=True)
-    condicion=models.CharField(max_length=10,choices=Condicion.choices,default=Condicion.NUEVO, blank=True,null=False)
+    condicion=models.CharField(max_length=10,choices=Condicion.choices,default=Condicion.NUEVO, blank=False,null=False)
     libro=models.ForeignKey(Libro,on_delete=models.PROTECT,related_name='copias_fisicas',null=False,blank=False)
     observaciones=models.TextField(blank=True)
 
