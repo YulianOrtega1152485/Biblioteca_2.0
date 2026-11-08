@@ -19,11 +19,8 @@ class Autor_admin(admin.ModelAdmin):
 class copia_fisica_inline(admin.TabularInline):
     model=Copia_Fisica
     extra=1
-    
 @admin.register(Libro)
 class Libro_admin(admin.ModelAdmin):
-    
-    
     list_display=('ISBN','titulo','año_publicacion','categoria')
     search_fields=('ISBN','titulo')
     list_filter=('categoria',)
@@ -48,9 +45,9 @@ class Estado_Prestamo_Filter(admin.SimpleListFilter):
         ]
     def queryset(self,request,queryset):
         if self.value()=='activo':
-            return queryset.filter(fecha_devolucion__isnull==True)
+            return queryset.filter(fecha_devolucion__isnull=True)
         elif self.value()=='devuelto':
-            return queryset.filter(fecha_devolucion__isnull==False)
+            return queryset.filter(fecha_devolucion__isnull=False)
         return queryset
 
 @admin.register(Prestamo)
