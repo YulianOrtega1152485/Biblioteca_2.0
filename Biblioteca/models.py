@@ -65,7 +65,11 @@ class Prestamo(models.Model):
     fecha_devolucion=models.DateField(null=True,blank=True)
     
     class Meta:
-        constraints=[models.UniqueConstraint(fields=['copia_fisica'],condition=models.Q(fecha_devolucion__isnull=True),name='unique_copia_prestada')]
+        constraints=[models.UniqueConstraint(fields=['copia_fisica'],condition=models.Q(fecha_devolucion__isnull=True),name='unique_copia_prestada'),
+                     models.CheckConstraint(condition=models.Q(fecha_limite__gt=models.F('fecha_prestamo')),name='Fecha limite no puede ser menor a la fecha de prestamo',
+                     violation_error_message='La fecha limite no puede ser anterior a la fecha de prestamo'
+                     )
+                    ]
 
     
     def clean(self):
@@ -76,6 +80,8 @@ class Prestamo(models.Model):
             ).exclude(pk=self.pk).exists()
             if existe_prestamo_activo:
                 raise ValidationError("Lo siento, esta copia fisica ya ha sido prestada")
-    
+        if self.fecha_limite<self.fecha_prestamo:
+            raise ValidationError({'fecha_limite','La fecha limite no puede ser anterior a la fecha de prestamo'})
+
     def __str__(self):
         return f'{self.fecha_prestamo}-{self.estudiante}-{self.copia_fisica}-{self.fecha_limite}'
