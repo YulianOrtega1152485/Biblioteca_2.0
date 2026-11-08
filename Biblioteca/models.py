@@ -35,7 +35,7 @@ class Libro(models.Model):
             if(self.año_publicacion>datetime.date.today().year):
                 raise ValidationError({'año_publicacion':"El AÑO ES SUPERIOR AL ACTUAL"})
             if(self.año_publicacion<1000):
-                raise ValidationError({'año_publicacion',"El AÑO NO PUEDE SER MENOR AL LOS 1000 AÑOS"})
+                raise ValidationError({'año_publicacion':"El AÑO NO PUEDE SER MENOR AL LOS 1000 AÑOS"})
 
     def __str__(self):
         return f'{self.ISBN}-{self.titulo}({self.año_publicacion})'
@@ -80,8 +80,9 @@ class Prestamo(models.Model):
             ).exclude(pk=self.pk).exists()
             if existe_prestamo_activo:
                 raise ValidationError("Lo siento, esta copia fisica ya ha sido prestada")
-        if self.fecha_limite<self.fecha_prestamo:
-            raise ValidationError({'fecha_limite','La fecha limite no puede ser anterior a la fecha de prestamo'})
+        f_prestamo= self.fecha_prestamo if self.fecha_prestamo is not None else datetime.date.today()
+        if self.fecha_limite<f_prestamo:
+                raise ValidationError({'fecha_limite':'La fecha limite no puede ser anterior a la fecha de prestamo'})
 
     def __str__(self):
         return f'{self.fecha_prestamo}-{self.estudiante}-{self.copia_fisica}-{self.fecha_limite}'
